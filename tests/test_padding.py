@@ -49,14 +49,13 @@ def test_padding_1D(times=5, scheme={'naive': [Padding1D, UnPadding1D]}):
             assert padding_data.shape == (B, *max_shape)
             assert padding_mask.shape == (B, *max_shape)
             unpadding_data = unpad(padding_data, ori_shapes)
-            print('epoch: {}, {} cost time: {}'.format(i, name, time.time() - t))
-                #profiler.step()
+            print(f'epoch: {i}, {name} cost time: {time.time() - t}')
             for item, new_item in zip(data, unpadding_data):
                 assert item.eq(new_item).all()
-        #if cuda: torch.cuda.synchronize()
-                #print('epoch: {}, {} cost time: {}'.format(i, name, time.time() - t))
+            #if cuda: torch.cuda.synchronize()
+                    #print('epoch: {}, {} cost time: {}'.format(i, name, time.time() - t))
     print("test_padding_1D OK")
-    
+
     for name, [pad, unpad] in scheme.items():
         if name == 'hpc':
             assert cuda
@@ -79,25 +78,25 @@ def test_padding_1D(times=5, scheme={'naive': [Padding1D, UnPadding1D]}):
                 assert len(ori_shapes) <= 4
                 # for i, item in enumerate(padding_data):
                 #     print('{} group {} data shape: {}'.format(name, i, item.shape))
-                assert sum([len(item) for item in padding_data]) == B
-                assert sum([len(item) for item in padding_mask]) == B
+                assert sum(len(item) for item in padding_data) == B
+                assert sum(len(item) for item in padding_mask) == B
                 unpadding_data = unpad(padding_data, ori_shapes)
-                print('epoch: {}, {} {} cost time: {}'.format(i, name, mode, time.time() - t))
+                print(f'epoch: {i}, {name} {mode} cost time: {time.time() - t}')
                 sorted_data = sorted(data, key=lambda t: reduce(lambda x, y: x * y, t.shape))
                 for item, new_item in zip(sorted_data, unpadding_data): assert item.eq(new_item).all()
-                    #profiler.step()
-                    
+                                #profiler.step()
+                                
 
-                #if cuda: torch.cuda.synchronize()
-                #end = time.time()
-                #print(f'{} {} Total Time Consumption : {end:.4f}')
-            print("{} test_padding_1D group with {} OK".format(name, mode))
+                            #if cuda: torch.cuda.synchronize()
+                            #end = time.time()
+                            #print(f'{} {} Total Time Consumption : {end:.4f}')
+            print(f"{name} test_padding_1D group with {mode} OK")
 
         same_data = [torch.randn(32) for _ in range(B)]
         padding_data, padding_mask, ori_shapes = pad(same_data, group=4)
         assert len(padding_data) == 1
         assert padding_data[0].shape == (B, 32)
-        print("{} test_padding_1D same data group OK".format(name))
+        print(f"{name} test_padding_1D same data group OK")
 
 
 def test_padding_2D(times=5, scheme={'naive': [Padding2D, UnPadding2D]}):
@@ -128,11 +127,11 @@ def test_padding_2D(times=5, scheme={'naive': [Padding2D, UnPadding2D]}):
             assert padding_mask.shape == (B, *max_shape)
             unpadding_data = unpad(padding_data, ori_shapes)
             if cuda: torch.cuda.synchronize()
-            print('epoch: {}, {} cost time: {}'.format(i, name, time.time() - t))
+            print(f'epoch: {i}, {name} cost time: {time.time() - t}')
             for item, new_item in zip(data, unpadding_data):
                 assert item.eq(new_item).all()
     print("test_padding_2D OK")
-    
+
     for name, [pad, unpad] in scheme.items():
         if name == 'hpc':
             assert cuda
@@ -146,20 +145,20 @@ def test_padding_2D(times=5, scheme={'naive': [Padding2D, UnPadding2D]}):
                 assert len(ori_shapes) <= 4
                 # for i, item in enumerate(padding_data):
                 #     print('{} group {} data shape: {}'.format(name, i, item.shape))
-                assert sum([len(item) for item in padding_data]) == B
-                assert sum([len(item) for item in padding_mask]) == B
+                assert sum(len(item) for item in padding_data) == B
+                assert sum(len(item) for item in padding_mask) == B
                 unpadding_data = unpad(padding_data, ori_shapes)
-                print('epoch: {}, {} {} cost time: {}'.format(i, name, mode, time.time() - t))
+                print(f'epoch: {i}, {name} {mode} cost time: {time.time() - t}')
                 sorted_data = sorted(data, key=lambda t: reduce(lambda x, y: x * y, t.shape))
                 for item, new_item in zip(sorted_data, unpadding_data): 
                     assert item.eq(new_item).all()
-            print("{} test_padding_2D group with {} OK".format(name, mode))
+            print(f"{name} test_padding_2D group with {mode} OK")
 
         same_data = [torch.randn(32,32) for _ in range(B)]
         padding_data, padding_mask, ori_shapes = pad(same_data, group=4)
         assert len(padding_data) == 1
         assert padding_data[0].shape == (B, 32, 32)
-        print("{} test_padding_2D same data group OK".format(name))
+        print(f"{name} test_padding_2D same data group OK")
 
 
 def test_padding_3D(times=5, scheme={'naive': [Padding3D, UnPadding3D]}):
@@ -187,17 +186,17 @@ def test_padding_3D(times=5, scheme={'naive': [Padding3D, UnPadding3D]}):
         for i in range(times):
             t = time.time()
             padding_data, padding_mask, ori_shapes = pad(data)
-            
+
             assert padding_data.shape == (B, *max_shape)
             assert padding_mask.shape == (B, *max_shape)
             unpadding_data = unpad(padding_data, ori_shapes)
             if cuda: torch.cuda.synchronize()
-            print('epoch: {}, {} cost time: {}'.format(i, name, time.time() - t))
+            print(f'epoch: {i}, {name} cost time: {time.time() - t}')
             for item, new_item in zip(data, unpadding_data):
-                
+
                 assert item.eq(new_item).all()
     print("test_padding_3D OK")
-    
+
     for name, [pad, unpad] in scheme.items():
         if name == 'hpc':
             assert cuda
@@ -211,20 +210,20 @@ def test_padding_3D(times=5, scheme={'naive': [Padding3D, UnPadding3D]}):
                 assert len(ori_shapes) <= 4
                 # for i, item in enumerate(padding_data):
                 #     print('{} group {} data shape: {}'.format(name, i, item.shape))
-                assert sum([len(item) for item in padding_data]) == B
-                assert sum([len(item) for item in padding_mask]) == B
+                assert sum(len(item) for item in padding_data) == B
+                assert sum(len(item) for item in padding_mask) == B
                 unpadding_data = unpad(padding_data, ori_shapes)
-                print('epoch: {}, {} {} cost time: {}'.format(i, name, mode, time.time() - t))
+                print(f'epoch: {i}, {name} {mode} cost time: {time.time() - t}')
                 sorted_data = sorted(data, key=lambda t: reduce(lambda x, y: x * y, t.shape))
                 for item, new_item in zip(sorted_data, unpadding_data): 
                     assert item.eq(new_item).all()
-            print("{} test_padding_3D group with {} OK".format(name, mode))
+            print(f"{name} test_padding_3D group with {mode} OK")
 
         same_data = [torch.randn(32,32,32) for _ in range(B)]
         padding_data, padding_mask, ori_shapes = pad(same_data, group=4)
         assert len(padding_data) == 1
         assert padding_data[0].shape == (B, 32, 32, 32)
-        print("{} test_padding_3D same data group OK".format(name))
+        print(f"{name} test_padding_3D same data group OK")
 
 
 if __name__ == "__main__":

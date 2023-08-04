@@ -22,7 +22,7 @@ def qrdqn_val():
     ori_done = torch.randn(B)
     ori_weight = torch.randn(B)
     ori_value_gamma = torch.randn(B)
- 
+
     hpc_q = ori_q.clone().detach()
     hpc_next_n_q = ori_next_n_q.clone().detach()
     hpc_action = ori_action.clone().detach()
@@ -70,9 +70,9 @@ def qrdqn_val():
     torch.cuda.cudart().cudaProfilerStop()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("qrdqn fp mean_relative_error: " + str(mre))
+    print(f"qrdqn fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_q.grad).cpu().detach().numpy(), torch.flatten(hpc_q.grad).cpu().detach().numpy())
-    print("qrdqn bp mean_relative_error: " + str(mre))
+    print(f"qrdqn bp mean_relative_error: {str(mre)}")
 
 def qrdqn_perf():
     ori_q = torch.randn(B, N, tau)
@@ -83,7 +83,7 @@ def qrdqn_perf():
     ori_done = torch.randn(B)
     ori_weight = torch.randn(B)
     ori_value_gamma = torch.randn(B)
- 
+
     hpc_q = ori_q.clone().detach()
     hpc_next_n_q = ori_next_n_q.clone().detach()
     hpc_action = ori_action.clone().detach()
@@ -122,7 +122,7 @@ def qrdqn_perf():
         ori_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, original qrdqn cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, original qrdqn cost time: {time.time() - t}')
 
     #torch.cuda.cudart().cudaProfilerStart()
     hpc_q.requires_grad_(True)
@@ -133,16 +133,18 @@ def qrdqn_perf():
         hpc_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc qrdqn cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc qrdqn cost time: {time.time() - t}')
     #torch.cuda.cudart().cudaProfilerStop()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("qrdqn fp mean_relative_error: " + str(mre))
+    print(f"qrdqn fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_q.grad).cpu().detach().numpy(), torch.flatten(hpc_q.grad).cpu().detach().numpy())
-    print("qrdqn bp mean_relative_error: " + str(mre))
+    print(f"qrdqn bp mean_relative_error: {str(mre)}")
 
 if __name__ == '__main__':
-    print("target problem: tau = {}, T = {}, B = {}, N = {}, gamma = {}".format(tau, T, B, N, gamma))
+    print(
+        f"target problem: tau = {tau}, T = {T}, B = {B}, N = {N}, gamma = {gamma}"
+    )
     print("================run qrdqn validation test================")
     qrdqn_val()
     print("================run qrdqn performance test================")

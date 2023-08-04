@@ -36,8 +36,7 @@ class PPOFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_policy_loss, grad_value_loss, grad_entropy_loss, grad_approx_kl, grad_clipfrac):
         inputs = [grad_policy_loss, grad_value_loss, grad_entropy_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.PPOBackward(inputs, outputs)
@@ -131,7 +130,9 @@ class PPO(torch.nn.Module):
         else:
             assert(weight.is_cuda)
 
-        assert dual_clip is None or dual_clip > 1.0, "dual_clip value must be greater than 1.0, but get value: {}".format(dual_clip)
+        assert (
+            dual_clip is None or dual_clip > 1.0
+        ), f"dual_clip value must be greater than 1.0, but get value: {dual_clip}"
 
         if dual_clip is None:
             dual_clip = 0.0;

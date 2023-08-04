@@ -64,9 +64,9 @@ def qntd_rescale_val():
         torch.cuda.synchronize()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("qntd rescale fp mean_relative_error: " + str(mre))
+    print(f"qntd rescale fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_q.grad).cpu().detach().numpy(), torch.flatten(hpc_q.grad).cpu().detach().numpy())
-    print("qntd rescale bp mean_relative_error: " + str(mre))
+    print(f"qntd rescale bp mean_relative_error: {str(mre)}")
 
 def qntd_rescale_perf():
     ori_q = torch.randn(B, N)
@@ -113,7 +113,7 @@ def qntd_rescale_perf():
         ori_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, original qntd rescale cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, original qntd rescale cost time: {time.time() - t}')
 
     hpc_q.requires_grad_(True)
     for i in range(times):
@@ -123,11 +123,11 @@ def qntd_rescale_perf():
         hpc_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc qntd rescale cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc qntd rescale cost time: {time.time() - t}')
 
 
 if __name__ == '__main__':
-    print("target problem: T = {}, B = {}, N = {}, gamma = {}".format(T, B, N, gamma))
+    print(f"target problem: T = {T}, B = {B}, N = {N}, gamma = {gamma}")
     print("================run qntd rescale validation test================")
     qntd_rescale_val()
     print("================run qntd rescale performance test================")

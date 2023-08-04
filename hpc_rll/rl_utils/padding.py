@@ -33,7 +33,7 @@ def Padding1D(inputs: List[torch.Tensor], mode='constant', value: int = 0, group
         k = 0
         for i in range(len(group_num)):
             shape = []
-            for j in range(group_num[i]):
+            for _ in range(group_num[i]):
                 shape.append(inputs[k].shape[0])
                 group_id.append(i)
                 k = k + 1
@@ -55,16 +55,14 @@ def UnPadding1D(x: Union[torch.Tensor, List[torch.Tensor]],
                 shapes: Union[List, List[List]]) -> List[torch.Tensor]:
     if isinstance(x, torch.Tensor):
         return hpc_rl_utils.Unpad1DForward(x, shapes)
-    else:
-        ret = []
-        for t, s in zip(x, shapes):
-            ret.append(hpc_rl_utils.Unpad1DForward(t, s))
-        return sum(ret, [])
+    ret = [hpc_rl_utils.Unpad1DForward(t, s) for t, s in zip(x, shapes)]
+    return sum(ret, [])
 
 def Padding2D(inputs: List[torch.Tensor], mode='constant', value: int = 0, group: int = 1, group_mode='sample'):
     assert mode in ['constant'], mode
     assert group_mode in ['sample', 'oracle'], group_mode
     assert group >= 1, group
+    shapes = []
     if group > 1:
         inputs = sorted(inputs, key=lambda t: cum(t.shape))
         if group_mode == 'sample':
@@ -78,17 +76,14 @@ def Padding2D(inputs: List[torch.Tensor], mode='constant', value: int = 0, group
         assert len(group_idx) == len(group_shape) + 1
         max_shape = []
         for s in group_shape:
-            max_shape.append(s[0])
-            max_shape.append(s[1])
+            max_shape.extend((s[0], s[1]))
         group_cnt = [(group_idx[i+1] - group_idx[i]) for i in range(len(group_shape))]
-        shapes = []
         group_id = []
         k = 0
         for i in range(len(group_cnt)):
             shape = []
-            for j in range(group_cnt[i]):
-                shape.append(inputs[k].shape[0])
-                shape.append(inputs[k].shape[1])
+            for _ in range(group_cnt[i]):
+                shape.extend((inputs[k].shape[0], inputs[k].shape[1]))
                 group_id.append(i)
                 k = k + 1
             shapes.append(shape)
@@ -98,10 +93,8 @@ def Padding2D(inputs: List[torch.Tensor], mode='constant', value: int = 0, group
         mask = result[1]
         return [tuple(new_x), tuple(mask), tuple(shapes)]
     else:
-        shapes = []
         for t in inputs:
-            shapes.append(t.shape[0])
-            shapes.append(t.shape[1])
+            shapes.extend((t.shape[0], t.shape[1]))
         result = hpc_rl_utils.Pad2DForward(inputs, value)
         new_x = result[0]
         mask = result[1]
@@ -112,16 +105,14 @@ def UnPadding2D(x: Union[torch.Tensor, List[torch.Tensor]],
                 shapes: Union[List, List[List]]) -> List[torch.Tensor]:
     if isinstance(x, torch.Tensor):
         return hpc_rl_utils.Unpad2DForward(x, shapes)
-    else:
-        ret = []
-        for t, s in zip(x, shapes):
-            ret.append(hpc_rl_utils.Unpad2DForward(t, s))
-        return sum(ret, [])
+    ret = [hpc_rl_utils.Unpad2DForward(t, s) for t, s in zip(x, shapes)]
+    return sum(ret, [])
 
 def Padding3D(inputs: List[torch.Tensor], mode='constant', value: int = 0, group: int = 1, group_mode='sample'):
     assert mode in ['constant'], mode
     assert group_mode in ['sample', 'oracle'], group_mode
     assert group >= 1, group
+    shapes = []
     if group > 1:
         inputs = sorted(inputs, key=lambda t: cum(t.shape))
         if group_mode == 'sample':
@@ -135,20 +126,14 @@ def Padding3D(inputs: List[torch.Tensor], mode='constant', value: int = 0, group
         assert len(group_idx) == len(group_shape) + 1
         max_shape = []
         for s in group_shape:
-            max_shape.append(s[0])
-            max_shape.append(s[1])
-            max_shape.append(s[2])
-
+            max_shape.extend((s[0], s[1], s[2]))
         group_cnt = [(group_idx[i+1] - group_idx[i]) for i in range(len(group_shape))]
-        shapes = []
         group_id = []
         k = 0
         for i in range(len(group_cnt)):
             shape = []
-            for j in range(group_cnt[i]):
-                shape.append(inputs[k].shape[0])
-                shape.append(inputs[k].shape[1])
-                shape.append(inputs[k].shape[2])
+            for _ in range(group_cnt[i]):
+                shape.extend((inputs[k].shape[0], inputs[k].shape[1], inputs[k].shape[2]))
                 group_id.append(i)
                 k = k + 1
             shapes.append(shape)
@@ -158,11 +143,8 @@ def Padding3D(inputs: List[torch.Tensor], mode='constant', value: int = 0, group
         mask = result[1]
         return [tuple(new_x), tuple(mask), tuple(shapes)]
     else:
-        shapes = []
         for t in inputs:
-            shapes.append(t.shape[0])
-            shapes.append(t.shape[1])
-            shapes.append(t.shape[2])
+            shapes.extend((t.shape[0], t.shape[1], t.shape[2]))
         result = hpc_rl_utils.Pad3DForward(inputs, value)
         new_x = result[0]
         mask = result[1]
@@ -173,10 +155,7 @@ def UnPadding3D(x: Union[torch.Tensor, List[torch.Tensor]],
                 shapes: Union[List, List[List]]) -> List[torch.Tensor]:
     if isinstance(x, torch.Tensor):
         return hpc_rl_utils.Unpad3DForward(x, shapes)
-    else:
-        ret = []
-        for t, s in zip(x, shapes):
-            ret.append(hpc_rl_utils.Unpad3DForward(t, s))
-        return sum(ret, [])
+    ret = [hpc_rl_utils.Unpad3DForward(t, s) for t, s in zip(x, shapes)]
+    return sum(ret, [])
 
 

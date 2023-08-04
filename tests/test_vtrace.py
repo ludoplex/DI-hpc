@@ -53,11 +53,11 @@ def vtrace_val():
     hpc_loss.backward()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("vtrace fp mean_relative_error: " + str(mre))
+    print(f"vtrace fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_target_output.grad).cpu().detach().numpy(), torch.flatten(hpc_target_output.grad).cpu().detach().numpy())
-    print("vtrace bp target_output mean_relative_error: " + str(mre))
+    print(f"vtrace bp target_output mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_value.grad).cpu().detach().numpy(), torch.flatten(hpc_value.grad).cpu().detach().numpy())
-    print("vtrace bp value mean_relative_error: " + str(mre))
+    print(f"vtrace bp value mean_relative_error: {str(mre)}")
 
 
 def vtrace_perf():
@@ -97,7 +97,7 @@ def vtrace_perf():
         ori_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, original vtrace cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, original vtrace cost time: {time.time() - t}')
 
     hpc_target_output.requires_grad_(True)
     hpc_value.requires_grad_(True)
@@ -108,11 +108,11 @@ def vtrace_perf():
         hpc_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc vtrace cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc vtrace cost time: {time.time() - t}')
 
 
 if __name__ == '__main__':
-    print("target problem: T = {}, B = {}, N = {}".format(T, B, N))
+    print(f"target problem: T = {T}, B = {B}, N = {N}")
     print("================run vtrace validation test================")
     vtrace_val()
     print("================run vtrace performance test================")

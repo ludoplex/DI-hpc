@@ -54,9 +54,9 @@ def upgo_val():
         torch.cuda.synchronize()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("upgo fp mean_relative_error: " + str(mre))
+    print(f"upgo fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_target_output.grad).cpu().detach().numpy(), torch.flatten(hpc_target_output.grad).cpu().detach().numpy())
-    print("upgo bp mean_relative_error: " + str(mre))
+    print(f"upgo bp mean_relative_error: {str(mre)}")
 
 def upgo_perf():
     ori_target_output = torch.randn(T, B, N)
@@ -94,7 +94,7 @@ def upgo_perf():
         ori_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, original upgo cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, original upgo cost time: {time.time() - t}')
 
     hpc_target_output.requires_grad_(True)
     for i in range(times):
@@ -104,10 +104,10 @@ def upgo_perf():
         hpc_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc upgo cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc upgo cost time: {time.time() - t}')
 
 if __name__ == '__main__':
-    print("target problem: T = {}, B = {}, N = {}".format(T, B, N))
+    print(f"target problem: T = {T}, B = {B}, N = {N}")
     print("================run upgo validation test================")
     upgo_val()
     print("================run upgo performance test================")

@@ -66,14 +66,14 @@ def ppo_val():
     hpc_loss = sum(hpc_loss)
     hpc_loss.backward()
 
-    print("ori_info: " + str(ori_info))
-    print("hpc_info: " + str(hpc_info))
+    print(f"ori_info: {str(ori_info)}")
+    print(f"hpc_info: {str(hpc_info)}")
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("ppo fp loss mean_relative_error: " + str(mre))
+    print(f"ppo fp loss mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_logits_new.grad).cpu().detach().numpy(), torch.flatten(hpc_logits_new.grad).cpu().detach().numpy())
-    print("ppo bp logits_new mean_relative_error: " + str(mre))
+    print(f"ppo bp logits_new mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_value_new.grad).cpu().detach().numpy(), torch.flatten(hpc_value_new.grad).cpu().detach().numpy())
-    print("ppo bp value_new mean_relative_error: " + str(mre))
+    print(f"ppo bp value_new mean_relative_error: {str(mre)}")
 
 
 def ppo_perf():
@@ -125,7 +125,7 @@ def ppo_perf():
         ori_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, origin ppo cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, origin ppo cost time: {time.time() - t}')
 
     hpc_logits_new.requires_grad_(True)
     hpc_value_new.requires_grad_(True)
@@ -136,11 +136,13 @@ def ppo_perf():
         hpc_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc ppo cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc ppo cost time: {time.time() - t}')
 
 
 if __name__ == '__main__':
-    print("target problem: B = {}, N = {}, clip_ratio = {}, use_value_clip = {}, dual_clip = {}".format(B, N, clip_ratio, use_value_clip, dual_clip))
+    print(
+        f"target problem: B = {B}, N = {N}, clip_ratio = {clip_ratio}, use_value_clip = {use_value_clip}, dual_clip = {dual_clip}"
+    )
     print("================run ppo validation test================")
     ppo_val()
     print("================run ppo performance test================")

@@ -45,9 +45,9 @@ def ppo_error(
             ways to calculate this mean and std, like among data buffer or train batch, so we don't couple
             this part into ppo_error, you can refer to our examples for different ways.
     """
-    assert dual_clip is None or dual_clip > 1.0, "dual_clip value must be greater than 1.0, but get value: {}".format(
-        dual_clip
-    )
+    assert (
+        dual_clip is None or dual_clip > 1.0
+    ), f"dual_clip value must be greater than 1.0, but get value: {dual_clip}"
     logit_new, logit_old, action, value_new, value_old, adv, return_, weight = data
     if weight is None:
         weight = torch.ones_like(adv)

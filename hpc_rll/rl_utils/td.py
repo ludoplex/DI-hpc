@@ -20,8 +20,7 @@ class DistNStepTDFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_loss, grad_td_err):
         inputs = [grad_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.DistNStepTdBackward(inputs, outputs)
@@ -126,8 +125,7 @@ class TDLambdaFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_loss):
         inputs = [grad_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.TdLambdaBackward(inputs, outputs)
@@ -203,8 +201,7 @@ class QNStepTDFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_loss, grad_td_err):
         inputs = [grad_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.QNStepTdBackward(inputs, outputs)
@@ -293,8 +290,7 @@ class QNStepTDRescaleFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_loss, grad_td_err):
         inputs = [grad_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.QNStepTdRescaleBackward(inputs, outputs)
@@ -387,8 +383,7 @@ class IQNNStepTDErrorFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_loss, grad_td_err_per_sample):
         inputs = [grad_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.IQNNStepTDErrorBackward(inputs, outputs)
@@ -501,8 +496,7 @@ class QRDQNNStepTDErrorFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_loss, grad_td_err_per_sample):
         inputs = [grad_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.QRDQNNStepTDErrorBackward(inputs, outputs)

@@ -53,9 +53,9 @@ def scatter_val():
             torch.cuda.synchronize()
 
         mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-        print("scatter type {} fp mean_relative_error: {}".format(scatter_type, str(mre)))
+        print(f"scatter type {scatter_type} fp mean_relative_error: {str(mre)}")
         mre = mean_relative_error(torch.flatten(ori_input.grad).cpu().detach().numpy(), torch.flatten(hpc_input.grad).cpu().detach().numpy())
-        print("scatter type {} bp mean_relative_error: {}".format(scatter_type, str(mre)))
+        print(f"scatter type {scatter_type} bp mean_relative_error: {str(mre)}")
 
 
 # Note: performance test use origin gpu version
@@ -89,7 +89,9 @@ def scatter_perf():
             ori_loss.backward()
             if use_cuda:
                 torch.cuda.synchronize()
-            print('epoch: {}, original scatter type {} cost time: {}'.format(i, scatter_type, time.time() - t))
+            print(
+                f'epoch: {i}, original scatter type {scatter_type} cost time: {time.time() - t}'
+            )
 
         for i in range(times):
             t = time.time()
@@ -100,11 +102,13 @@ def scatter_perf():
             hpc_loss.backward()
             if use_cuda:
                 torch.cuda.synchronize()
-            print('epoch: {}, hpc scatter type {} cost time: {}'.format(i, scatter_type, time.time() - t))
+            print(
+                f'epoch: {i}, hpc scatter type {scatter_type} cost time: {time.time() - t}'
+            )
 
 
 if __name__ == '__main__':
-    print("target problem: B = {}, M = {}, N = {}, H = {}, W = {}".format(B, M, N, H, W))
+    print(f"target problem: B = {B}, M = {M}, N = {N}, H = {H}, W = {W}")
     print("================run scatter validation test================")
     scatter_val()
     print("================run scatter performance test================")

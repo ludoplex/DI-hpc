@@ -45,9 +45,9 @@ def td_val():
         torch.cuda.synchronize()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("td fp mean_relative_error: " + str(mre))
+    print(f"td fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_value.grad).cpu().detach().numpy(), torch.flatten(hpc_value.grad).cpu().detach().numpy())
-    print("td bp mean_relative_error: " + str(mre))
+    print(f"td bp mean_relative_error: {str(mre)}")
 
 def td_perf():
     ori_value = torch.randn(T + 1, B)
@@ -77,7 +77,7 @@ def td_perf():
         ori_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, original td cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, original td cost time: {time.time() - t}')
 
     hpc_value.requires_grad_(True)
     for i in range(times):
@@ -87,11 +87,11 @@ def td_perf():
         hpc_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc td cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc td cost time: {time.time() - t}')
 
 
 if __name__ == '__main__':
-    print("target problem: T = {}, B = {}".format(T, B))
+    print(f"target problem: T = {T}, B = {B}")
     print("================run td validation test================")
     td_val()
     print("================run td performance test================")

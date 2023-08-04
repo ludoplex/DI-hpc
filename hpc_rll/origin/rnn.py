@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 def is_sequence(data):
-    return isinstance(data, list) or isinstance(data, tuple)
+    return isinstance(data, (list, tuple))
 
 
 def sequence_mask(lengths, max_len=None):
@@ -28,10 +28,7 @@ def sequence_mask(lengths, max_len=None):
     if len(lengths.shape) == 1:
         lengths = lengths.unsqueeze(dim=1)
     bz = lengths.numel()
-    if max_len is None:
-        max_len = lengths.max()
-    else:
-        max_len = min(max_len, lengths.max())
+    max_len = lengths.max() if max_len is None else min(max_len, lengths.max())
     return torch.arange(0, max_len).type_as(lengths).repeat(bz, 1).lt(lengths).to(lengths.device)
 
 
@@ -69,12 +66,10 @@ class LSTMForwardWrapper(object):
             )
             prev_state = (zeros, zeros)
         elif is_sequence(prev_state):
-            if len(prev_state) == 2 and isinstance(prev_state[0], torch.Tensor):
-                pass
-            else:
+            if len(prev_state) != 2 or not isinstance(prev_state[0], torch.Tensor):
                 if len(prev_state) != batch_size:
                     raise RuntimeError(
-                        "prev_state number is not equal to batch_size: {}/{}".format(len(prev_state), batch_size)
+                        f"prev_state number is not equal to batch_size: {len(prev_state)}/{batch_size}"
                     )
                 num_directions = 1
                 zeros = torch.zeros(
@@ -89,7 +84,7 @@ class LSTMForwardWrapper(object):
                 state = list(zip(*state))
                 prev_state = [torch.cat(t, dim=1) for t in state]
         else:
-            raise TypeError("not support prev_state type: {}".format(type(prev_state)))
+            raise TypeError(f"not support prev_state type: {type(prev_state)}")
         return prev_state
 
     def _after_forward(self, next_state, list_next_state=False):
@@ -286,13 +281,12 @@ class PytorchLSTM(nn.LSTM, LSTMForwardWrapper):
         Returns:
             - next_state (:obj:`tensor` or :obj:`list`): hidden state from lstm
         """
-        if list_next_state:
-            h, c = next_state
-            batch_size = h.shape[1]
-            next_state = [torch.chunk(h, batch_size, dim=1), torch.chunk(c, batch_size, dim=1)]
-            return list(zip(*next_state))
-        else:
+        if not list_next_state:
             return next_state
+        h, c = next_state
+        batch_size = h.shape[1]
+        next_state = [torch.chunk(h, batch_size, dim=1), torch.chunk(c, batch_size, dim=1)]
+        return list(zip(*next_state))
 
 
 def get_lstm(lstm_type, input_size, hidden_size, num_layers=1, norm_type='LN', dropout=0.):
@@ -330,20 +324,19 @@ def build_normalization(norm_type, dim=None):
     Returns:
         - norm_func (:obj:`nn.Module`): the corresponding batch normalization function
     """
-    if dim is None:
+    if dim is not None and norm_type in ['BN', 'IN', 'SyncBN']:
+        key = norm_type + str(dim)
+    elif dim is not None and norm_type in ['LN'] or dim is None:
         key = norm_type
     else:
-        if norm_type in ['BN', 'IN', 'SyncBN']:
-            key = norm_type + str(dim)
-        elif norm_type in ['LN']:
-            key = norm_type
-        else:
-            raise NotImplementedError("not support indicated dim when creates {}".format(norm_type))
+        raise NotImplementedError(
+            f"not support indicated dim when creates {norm_type}"
+        )
     norm_func = {
         'LN': nn.LayerNorm,
     }
-    if key in norm_func.keys():
+    if key in norm_func:
         return norm_func[key]
     else:
-        raise KeyError("invalid norm type: {}".format(key))
+        raise KeyError(f"invalid norm type: {key}")
 
