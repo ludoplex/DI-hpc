@@ -63,11 +63,11 @@ def dntd_val():
     hpc_loss.backward()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("dntd fp mean_relative_error: " + str(mre))
+    print(f"dntd fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_td_err).cpu().detach().numpy(), torch.flatten(hpc_td_err).cpu().detach().numpy())
-    print("dntd fp td_err mean_relative_error: " + str(mre))
+    print(f"dntd fp td_err mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_dist.grad).cpu().detach().numpy(), torch.flatten(hpc_dist.grad).cpu().detach().numpy())
-    print("dntd bp mean_relative_error: " + str(mre))
+    print(f"dntd bp mean_relative_error: {str(mre)}")
 
 
 def dntd_perf():
@@ -115,7 +115,7 @@ def dntd_perf():
         ori_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, origin dntd cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, origin dntd cost time: {time.time() - t}')
 
     hpc_dist.requires_grad_(True)
     for i in range(times):
@@ -125,11 +125,13 @@ def dntd_perf():
         hpc_loss.backward()
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc dntd cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc dntd cost time: {time.time() - t}')
 
 
 if __name__ == '__main__':
-    print("target problem: T = {}, B = {}, N = {}, gamma = {}, v_min = {}, v_max = {}, n_atom = {}".format(T, B, N, gamma, v_min, v_max, n_atom))
+    print(
+        f"target problem: T = {T}, B = {B}, N = {N}, gamma = {gamma}, v_min = {v_min}, v_max = {v_max}, n_atom = {n_atom}"
+    )
     print("================run dntd validation test================")
     dntd_val()
     print("================run dntd performance test================")

@@ -19,8 +19,7 @@ class UpgoFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_loss):
         inputs = [grad_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.UpgoBackward(inputs, outputs)

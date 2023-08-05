@@ -47,24 +47,24 @@ def lstm_val():
     torch.cuda.synchronize()
 
     mre = mean_relative_error(torch.flatten(ori_loss).cpu().detach().numpy(), torch.flatten(hpc_loss).cpu().detach().numpy())
-    print("lstm fp mean_relative_error: " + str(mre))
+    print(f"lstm fp mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_x.grad).cpu().detach().numpy(), torch.flatten(hpc_x.grad).cpu().detach().numpy())
-    print("lstm bp mean_relative_error: " + str(mre))
+    print(f"lstm bp mean_relative_error: {str(mre)}")
 
     ori_wx_grad = torch.cat((ori_lstm.wx[0].grad, ori_lstm.wx[1].grad, ori_lstm.wx[2].grad))
     hpc_wx_grad = hpc_lstm.wx.grad
     mre = mean_relative_error(torch.flatten(ori_wx_grad).cpu().numpy(), torch.flatten(hpc_wx_grad).cpu().numpy())
-    print("wx grad mean_relative_error: " + str(mre))
+    print(f"wx grad mean_relative_error: {str(mre)}")
 
     ori_wh_grad = torch.cat((ori_lstm.wh[0].grad, ori_lstm.wh[1].grad, ori_lstm.wh[2].grad))
     hpc_wh_grad = hpc_lstm.wh.grad
     mre = mean_relative_error(torch.flatten(ori_wh_grad).cpu().numpy(), torch.flatten(hpc_wh_grad).cpu().numpy())
-    print("wh grad mean_relative_error: " + str(mre))
+    print(f"wh grad mean_relative_error: {str(mre)}")
 
     ori_bias_grad = ori_lstm.bias.grad
     hpc_bias_grad = hpc_lstm.bias.grad
     mre = mean_relative_error(torch.flatten(ori_bias_grad).cpu().numpy(), torch.flatten(hpc_bias_grad).cpu().numpy())
-    print("bias grad mean_relative_error: " + str(mre))
+    print(f"bias grad mean_relative_error: {str(mre)}")
 
     params = list(ori_lstm.parameters())
     gamma_0_x = params[1]
@@ -84,9 +84,9 @@ def lstm_val():
     hpc_gamma_grad = hpc_lstm.ln_gamma.grad
     hpc_beta_grad = hpc_lstm.ln_beta.grad
     mre = mean_relative_error(torch.flatten(ori_gamma_grad).cpu().numpy(), torch.flatten(hpc_gamma_grad).cpu().numpy())
-    print("ln gamma grad mean_relative_error: " + str(mre))
+    print(f"ln gamma grad mean_relative_error: {str(mre)}")
     mre = mean_relative_error(torch.flatten(ori_beta_grad).cpu().numpy(), torch.flatten(hpc_beta_grad).cpu().numpy())
-    print("ln beta grad mean_relative_error: " + str(mre))
+    print(f"ln beta grad mean_relative_error: {str(mre)}")
 
 def lstm_perf():
     ori_lstm = get_lstm('normal', input_size, hidden_size, num_layers, norm_type, dropout)
@@ -113,11 +113,12 @@ def lstm_perf():
             loss.backward()
             if use_cuda:
                 torch.cuda.synchronize()
-            print('epoch: {}, {} lstm cost time: {}'.format(i, lstm_type, time.time() - t))
+            print(f'epoch: {i}, {lstm_type} lstm cost time: {time.time() - t}')
 
 if __name__ == '__main__':
-    print("target problem: seq_len = {}, batch_size = {}, input_size = {}, hidden_size = {}, num_layers = {}, norm_type = {}, dropout = {}".format(
-        seq_len, batch_size, input_size, hidden_size, num_layers, norm_type, dropout))
+    print(
+        f"target problem: seq_len = {seq_len}, batch_size = {batch_size}, input_size = {input_size}, hidden_size = {hidden_size}, num_layers = {num_layers}, norm_type = {norm_type}, dropout = {dropout}"
+    )
     print("==============lstm has no validation test================")
     #print("===============run lstm validation test==================")
     #lstm_val()

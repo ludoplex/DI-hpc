@@ -67,31 +67,30 @@ def Padding1D(x: List[torch.Tensor], mode='constant', value: int = 0, group: int
     assert mode in ['constant'], mode
     assert group_mode in ['sample', 'oracle'], group_mode
     assert group >= 1, group
-    if group > 1:
-        x = sorted(x, key=lambda t: cum(t.shape))
-        if group_mode == 'sample':
-            sampled_idx = np.random.choice(len(x), group - 1)
-            group_shape = [t.shape for i, t in enumerate(x) if i in sampled_idx]
-            group_shape += [x[-1].shape]  # max shape
-            print('sample group_shape', group_shape)
-            group_shape = list(set(group_shape))  # remove repeat shape
-            group_shape = sorted(group_shape, key=lambda t: cum(t))
-            group_shape_idx = 0
-            group_idx = [0]
-            for i, t in enumerate(x):
-                if cum(t.shape) > cum(group_shape[group_shape_idx]):
-                    group_idx.append(i)
-                    group_shape_idx += 1
-            group_idx.append(len(x))
-        elif group_mode == 'oracle':
-            group_shape, group_idx = oracle_split_group(x, group)
-            print('group_shape', group_shape)
-        assert len(group_idx) == len(group_shape) + 1
-
-        ret = [_Padding1D(x[group_idx[i]:group_idx[i + 1]], value) for i in range(len(group_shape))]
-        return list(zip(*ret))
-    else:
+    if group <= 1:
         return _Padding1D(x, value)
+    x = sorted(x, key=lambda t: cum(t.shape))
+    if group_mode == 'sample':
+        sampled_idx = np.random.choice(len(x), group - 1)
+        group_shape = [t.shape for i, t in enumerate(x) if i in sampled_idx]
+        group_shape += [x[-1].shape]  # max shape
+        print('sample group_shape', group_shape)
+        group_shape = list(set(group_shape))  # remove repeat shape
+        group_shape = sorted(group_shape, key=lambda t: cum(t))
+        group_shape_idx = 0
+        group_idx = [0]
+        for i, t in enumerate(x):
+            if cum(t.shape) > cum(group_shape[group_shape_idx]):
+                group_idx.append(i)
+                group_shape_idx += 1
+        group_idx.append(len(x))
+    elif group_mode == 'oracle':
+        group_shape, group_idx = oracle_split_group(x, group)
+        print('group_shape', group_shape)
+    assert len(group_idx) == len(group_shape) + 1
+
+    ret = [_Padding1D(x[group_idx[i]:group_idx[i + 1]], value) for i in range(len(group_shape))]
+    return list(zip(*ret))
 
 
 def _UnPadding1D(x, shapes, deepcopy: bool = False):
@@ -110,9 +109,8 @@ def UnPadding1D(x: Union[torch.Tensor, List[torch.Tensor]],
                 deepcopy: bool = False) -> List[torch.Tensor]:
     if isinstance(x, torch.Tensor):
         return _UnPadding1D(x, shapes, deepcopy)
-    else:
-        ret = [_UnPadding1D(t, s, deepcopy) for t, s in zip(x, shapes)]
-        return sum(ret, [])
+    ret = [_UnPadding1D(t, s, deepcopy) for t, s in zip(x, shapes)]
+    return sum(ret, [])
 
 
 def Padding2D(x: List[torch.Tensor],

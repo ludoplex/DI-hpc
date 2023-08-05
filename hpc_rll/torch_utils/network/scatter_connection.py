@@ -19,8 +19,7 @@ class ScatterConnectionFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_out):
         inputs = [grad_out]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_torch_utils_network.ScatterConnectionBackward(inputs, outputs)

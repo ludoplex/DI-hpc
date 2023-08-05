@@ -32,8 +32,7 @@ class VtraceFunction(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_pg_loss, grad_value_loss, grad_entropy_loss):
         inputs = [grad_pg_loss, grad_value_loss, grad_entropy_loss]
-        for var in ctx.bp_inputs:
-            inputs.append(var)
+        inputs.extend(iter(ctx.bp_inputs))
         outputs = ctx.bp_outputs
 
         hpc_rl_utils.VTraceBackward(inputs, outputs)

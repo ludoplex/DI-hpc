@@ -170,10 +170,10 @@ def td_lambda_error(data: namedtuple, gamma: float = 0.9, lambda_: float = 0.8) 
         weight = torch.ones_like(reward)
     with torch.no_grad():
         return_ = generalized_lambda_returns(value, reward, gamma, lambda_)
-    # discard the value at T as it should be considered in the next slice
-    loss = 0.5 * \
-        (F.mse_loss(return_, value[:-1], reduction='none') * weight).mean()
-    return loss
+    return (
+        0.5
+        * (F.mse_loss(return_, value[:-1], reduction='none') * weight).mean()
+    )
 
 
 def generalized_lambda_returns(
@@ -197,9 +197,9 @@ def generalized_lambda_returns(
           for each state from 0 to T-1, of size [T_traj, batchsize]
     """
     if not isinstance(gammas, torch.Tensor):
-        gammas = gammas * torch.ones_like(rewards)
+        gammas *= torch.ones_like(rewards)
     if not isinstance(lambda_, torch.Tensor):
-        lambda_ = lambda_ * torch.ones_like(rewards)
+        lambda_ *= torch.ones_like(rewards)
     bootstrap_values_tp1 = bootstrap_values[1:, :]
     return multistep_forward_view(bootstrap_values_tp1, rewards, gammas, lambda_)
 
@@ -350,8 +350,7 @@ def nstep_return(data: namedtuple, gamma: float, nstep: int):
     for i in range(1, nstep):
         reward_factor[i] = gamma * reward_factor[i - 1]
     reward = torch.matmul(reward_factor, reward)
-    return_ = reward + (gamma ** nstep) * next_value * (1 - done)
-    return return_
+    return reward + (gamma ** nstep) * next_value * (1 - done)
 
 
 iqn_nstep_td_data = namedtuple(

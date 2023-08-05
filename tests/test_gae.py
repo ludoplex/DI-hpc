@@ -26,7 +26,7 @@ def gae_val():
         torch.cuda.synchronize()
 
     mre = mean_relative_error(torch.flatten(ori_adv).cpu().detach().numpy(), torch.flatten(hpc_adv).cpu().detach().numpy())
-    print("gae mean_relative_error: " + str(mre))
+    print(f"gae mean_relative_error: {str(mre)}")
 
 def gae_perf():
     value = torch.randn(T + 1, B)
@@ -43,17 +43,17 @@ def gae_perf():
         adv = gae(gae_data(value, reward))
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, original gae cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, original gae cost time: {time.time() - t}')
     for i in range(times):
         t = time.time()
         hpc_adv = hpc_gae(value, reward)
         if use_cuda:
             torch.cuda.synchronize()
-        print('epoch: {}, hpc gae cost time: {}'.format(i, time.time() - t))
+        print(f'epoch: {i}, hpc gae cost time: {time.time() - t}')
 
 
 if __name__ == '__main__':
-    print("target problem: T = {}, B = {}".format(T, B))
+    print(f"target problem: T = {T}, B = {B}")
     print("================run gae validation test================")
     gae_val()
     print("================run gae performance test================")
